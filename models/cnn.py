@@ -3,6 +3,8 @@ import torch.nn as nn
 
 
 class CNN(nn.Module):
+
+    # Initialize Module and define the Convolutional and Fully Connected Layers
     def __init__(self):
         super().__init__()
 
@@ -40,6 +42,7 @@ class CNN(nn.Module):
             nn.Softmax(1),  # Showing the probability of each class
         )
 
+    # Pass a Tensor through the layers to transform into predictions
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.conv(x)
         x = self.fullyconn(x)
