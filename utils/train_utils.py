@@ -21,7 +21,6 @@ def train_epoch(
     correct = 0  # number of correct predictions
     total = 0  # total number of samples
 
-    model = model.to(device)
     model.train()  # set model to training mode
 
     for images, labels in dataloader:
@@ -63,7 +62,6 @@ def evaluate(
     correct = 0  # number of correct predictions
     total = 0  # total number of samples
 
-    model = model.to(device)
     model.eval()  # set model to evaluation mode
 
     with torch.no_grad():  # disable gradient tracking
@@ -95,7 +93,6 @@ def predict(
     device: torch.device,  # CPU or GPU device
 ) -> Tensor:
 
-    model = model.to(device)
     model.eval()  # set model to evaluation mode
 
     all_predictions = []  # store predictions for entire dataset

@@ -39,7 +39,6 @@ class CNN(nn.Module):
             nn.Linear(4 * 4 * 256, 512),
             nn.ReLU(),
             nn.Linear(512, 10),
-            nn.Softmax(1),  # Showing the probability of each class
         )
 
     # Pass a Tensor through the layers to transform into predictions
