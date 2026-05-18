@@ -3,6 +3,7 @@ import torch.nn as nn
 from torch import Tensor
 from torch.utils.data import DataLoader
 from torch.optim import Optimizer
+from tqdm import tqdm
 
 
 # Train model for one full epoch
@@ -16,14 +17,13 @@ def train_epoch(
     optimizer: Optimizer,  # updates model weights
     device: torch.device,  # CPU or GPU device
 ) -> tuple[float, float]:
-
     total_loss = 0  # sum of batch losses
     correct = 0  # number of correct predictions
     total = 0  # total number of samples
 
     model.train()  # set model to training mode
 
-    for images, labels in dataloader:
+    for images, labels in tqdm(dataloader, desc="Training"):
         images = images.to(device)  # move inputs to device
         labels = labels.to(device)  # move labels to device
 
@@ -65,7 +65,7 @@ def evaluate(
     model.eval()  # set model to evaluation mode
 
     with torch.no_grad():  # disable gradient tracking
-        for images, labels in dataloader:
+        for images, labels in tqdm(dataloader, desc="Evaluating"):
             images = images.to(device)  # move inputs to device
             labels = labels.to(device)  # move labels to device
 
