@@ -19,7 +19,7 @@ def main():
     model = CNN().to(device)
 
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.ASGD(model.parameters(), lr=0.001)
 
     epochs = 10
 
