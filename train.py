@@ -36,7 +36,7 @@ def main():
 
         print("Loaded previous best checkpoint.")
 
-    epochs = 2
+    epochs = 45
 
     history: dict[str, list] = init_history()
 
@@ -65,7 +65,7 @@ def main():
         print(
             f"Epoch {epoch+1}/{epochs} | "
             f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc * 100:.2f}% | "
-            f"Eval Loss: {eval_loss:.4f}, Eval Acc: {eval_acc * 100:.2f}%"
+            f"Eval Loss: {eval_loss:.4f}, Eval Acc: {eval_acc * 100:.2f}%\n"
         )
 
     plot_loss(history)

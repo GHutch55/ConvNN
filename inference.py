@@ -1,46 +1,113 @@
+import os
+import random
+
 import torch
-from torch import Tensor
-from torch.utils.data import DataLoader
+from PIL import Image
+from torchvision import transforms
+from torchvision.datasets import CIFAR10
 
 from models.cnn import CNN
-from utils.dataloader import get_test_loader
 from utils.checkpoint import load_checkpoint
 
 
-def predict(
-    model: torch.nn.Module,
-    dataloader: DataLoader[tuple[Tensor, Tensor]],
-    device: torch.device,
-) -> Tensor:
-    model = model.to(device)
-    model.eval()
+CLASSES = [
+    "airplane",
+    "automobile",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck",
+]
 
-    all_preds = []
+
+transform = transforms.Compose(
+    [
+        transforms.ToTensor(),
+        transforms.Normalize(
+            (0.5, 0.5, 0.5),
+            (0.5, 0.5, 0.5),
+        ),
+    ]
+)
+
+
+def predict_image(
+    model: torch.nn.Module,
+    image_path: str,
+    device: torch.device,
+) -> str:
+
+    image = Image.open(image_path).convert("RGB")
+
+    x = transform(image).unsqueeze(0).to(device)
 
     with torch.no_grad():
-        for images, _ in dataloader:
-            images = images.to(device)
 
-            outputs = model(images)
-            preds = outputs.argmax(dim=1)
+        outputs = model(x)
 
-            all_preds.append(preds.cpu())
+        pred = outputs.argmax(dim=1).item()
 
-    return torch.cat(all_preds)
+    return CLASSES[pred]
 
 
-def main():
+def main() -> None:
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = CNN()
-    model = load_checkpoint(model, "checkpoints/best_model.pt", device)
 
-    test_loader = get_test_loader()
+    optimizer = torch.optim.Adam(
+        model.parameters(),
+    )
 
-    preds = predict(model, test_loader, device)
+    model, optimizer = load_checkpoint(
+        model,
+        optimizer,
+        "checkpoints/best_model.pt",
+        device,
+    )
 
-    print("Predictions:", preds)
-    print("Total samples:", len(preds))
+    model = model.to(device)
+
+    model.eval()
+
+    os.makedirs(
+        "saved_images",
+        exist_ok=True,
+    )
+
+    dataset = CIFAR10(
+        root="./data",
+        train=False,
+        download=True,
+    )
+
+    indices = random.sample(
+        range(len(dataset)),
+        10,
+    )
+
+    for i, idx in enumerate(indices):
+
+        image, label = dataset[idx]
+
+        true_label = CLASSES[label]
+
+        image_path = f"saved_images/{i}_{true_label}.png"
+
+        image.save(image_path)
+
+        pred_label = predict_image(
+            model,
+            image_path,
+            device,
+        )
+
+        print(f"[{i}] " f"true={true_label} " f"pred={pred_label}")
 
 
 if __name__ == "__main__":
