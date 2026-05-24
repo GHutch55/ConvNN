@@ -91,9 +91,9 @@ def main() -> None:
         10,
     )
 
-    for i, idx in enumerate(indices):
+    for i, index in enumerate(indices):
 
-        image, label = dataset[idx]
+        image, label = dataset[index]
 
         true_label = CLASSES[label]
 
